@@ -1,6 +1,6 @@
 # CS-340-Haskell-Programming-Paradigms-and-Patterns-
 
-This repository contains most of the labs from my CS 340 class. Although, I did lose some files amongst my quest to my degree so I will upload what was salvaged.
+This repository contains most of the labs from my CS 340 class. Although, I did lose some files amongst my quest to obtain my degree, so I will upload what was salvaged. Refer to pdfs for a detailed description
 
 <img width="962" alt="image" src="https://user-images.githubusercontent.com/78235399/187097845-98061b1c-80fa-4fd4-bb72-158f57e350ff.png">
 
