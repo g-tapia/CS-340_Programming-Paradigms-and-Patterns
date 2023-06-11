@@ -16,14 +16,19 @@ import Debug.Trace
 import Text.Read (readMaybe)
 
 
--- one player has X, the other O;  pretty-pretting happens only for the
+-- one player has B, the other W;  pretty-pretting happens only for the
 -- board though
-data Piece = X | O deriving (Eq, Show)
+data Piece = B | W deriving (Eq, Show)
 
 
 opponent :: Piece -> Piece
-opponent X = O
-opponent O = X
+opponent B = W
+opponent W = B
+
+
+-- function to count the number of pieces on the board given W/B
+countPieces :: Board -> Piece -> Int
+countPieces (Board _ pieces) piece = length $ filter (\(_, _, p) -> p == piece) pieces
 
 
 -- coordinates go from bottom left to top right
@@ -114,8 +119,8 @@ possibleMoves board@(Board dimensions@(w, h) pieces) player =
 instance Show Board where
   show (Board (w, h) path) =
     concat (intersperse "\n" ((map (\(line, y) -> line ++ " " ++ (show (h-y-1))) (zip (map (\y -> concat (intersperse " " (map (\x -> case find (\(x', y', _) -> x' == x && y' == h-y-1) path of
-                                                                                                                                        Just (_, _, X) -> if (x, h-y-1, X) == (head path) then "X" else "x"
-                                                                                                                                        Just (_, _, O) -> if (x, h-y-1, O) == (head path) then "O" else "o"
+                                                                                                                                        Just (_, _, B) -> if (x, h-y-1, B) == (head path) then "B" else "b"
+                                                                                                                                        Just (_, _, W) -> if (x, h-y-1, W) == (head path) then "W" else "w"
                                                                                                                                         Nothing -> "_") [0..w-1]))) [0..h-1]) [0..h-1])) ++
                               [(concat (intersperse " " (map show [0..w-1])))]))
 
@@ -126,7 +131,7 @@ prune _ (Node x []) = Node x []
 prune n (Node x ns) = Node x $ map (prune (n-1)) ns
 
 
-data ScoreValue = Won | Lost | Score Int deriving (Eq, Show)
+data ScoreValue = Won | Lost | Moves Int deriving (Eq, Show)
 
 
 instance Ord ScoreValue where
@@ -136,7 +141,7 @@ instance Ord ScoreValue where
   compare Lost _ = LT
   compare _ Won = LT
   compare _ Lost = GT
-  compare (Score x) (Score y) = compare x y
+  compare (Moves x) (Moves y) = compare x y
 
 
 data Scored a = Scored { score :: ScoreValue, scoredValue :: a }
@@ -151,7 +156,7 @@ instance Ord (Scored a) where
 
 
 instance Show a => Show (Scored a) where
-  show (Scored s v) = "Score: " ++ show s ++ "\n\n" ++ show v
+  show (Scored s v) = "Moves: " ++ show s ++ "\n\n" ++ show v
 
 
 -- Minimax function from lecture notes
@@ -167,10 +172,10 @@ canMove :: Board -> Piece -> Bool
 canMove board player = possibleMoves board player /= []
 
 
-scoreBoard :: Board -> Piece -> Scored Board
-scoreBoard board player | not (canMove board player) = Scored Lost board
+numberOfMoves :: Board -> Piece -> Scored Board
+numberOfMoves board player | not (canMove board player) = Scored Lost board
                         | not (canMove board (opponent player)) = Scored Won board
-                        | otherwise = Scored (Score (length (possibleMoves board player))) board
+                        | otherwise = Scored (Moves (length (possibleMoves board player))) board
 
 
 gameTree :: Board -> Tree Board
@@ -208,52 +213,75 @@ readMove board piece = do
 
 -- Plays a game with the AI
 playAI :: Int -> IO (Maybe Piece)
-playAI depth = let board = Board (8, 8) [(3, 3, O), (4, 4, O), (3, 4, X), (4, 3, X)] in do
-  print board
-  play board X
-  where play board player | not (canMove board (opponent player)) = do
-                              putStrLn ((show player) ++ " wins!")
-                              return (Just (opponent player))
-                          | full board = do
-                              putStrLn "Draw!"
-                              return Nothing
-        play board X = do
-          putStr "Enter a move as 'X,Y': "
-          hFlush stdout
-          newBoard <- readMove board X
-          print newBoard
-          play newBoard O
-        play board O = do
-          let scored = minimax (\board -> scoreBoard board O) (prune depth (gameTree board))
-              score' = score scored
-              newBoard = scoredValue scored in do
-            putStrLn ("Computer moved " ++ show score' ++ ":")
+playAI depth = let board = Board (8, 8) [(3, 3, B), (4, 4, B), (3, 4, W), (4, 3, W)] in do
+    print board
+    play board B
+  where 
+    play board player 
+        | not (canMove board player) || full board = do
+            let blackScore = countPieces board B
+            let whiteScore = countPieces board W            
+            putStrLn ("\nBlack score: " ++ show blackScore)
+            putStrLn ("White score: " ++ show whiteScore)
+            if blackScore > whiteScore then do
+                putStrLn "Black wins!\n--------------------"
+                return (Just B)
+            else if whiteScore > blackScore then do
+                putStrLn "White wins!\n--------------------"
+                return (Just W)
+            else do
+                putStrLn "It's a draw!\n--------------------"
+                return Nothing
+        | player == B = do
+            putStr "\n[Black Move]\nEnter a move as 'X,Y': "
+            hFlush stdout
+            newBoard <- readMove board B
+            let scored = minimax (\board -> numberOfMoves board B) (prune depth (gameTree board))
+                moves' = score scored
+            putStrLn ("\n" ++ "Black score: " ++ show (countPieces board B) ++ "\nWhite " ++ show (countPieces board W) ++ "\n--------------------\n\n\n\n\n[W Possible " ++ show moves' ++ "]\nPlayer Black moved\n--------------------")
             print newBoard
-            play newBoard X
+            play newBoard W
+        | player == W = do
+            let scored = minimax (\board -> numberOfMoves board W) (prune depth (gameTree board))
+                moves' = score scored
+                newBoard = scoredValue scored
+            putStrLn ("\n" ++ "Black score: " ++ show (countPieces board B) ++ "\nWhite " ++ show (countPieces board W) ++ "\n--------------------\n\n\n\n\n[B Possible " ++ show moves' ++ "]\nComputer White moved\n--------------------")
+            print newBoard
+            play newBoard B
 
 
 -- let the AI play against itself, return winner, if any
 playAI2 :: Int -> IO (Maybe Piece)
-playAI2 depth = let board = Board (8, 8) [(3, 3, O), (4, 4, O), (3, 4, X), (4, 3, X)] in do
-  print board
-  play board X
-  where play board player | not (canMove board player) = do
-                              putStrLn ((show (opponent player)) ++ " wins!")
-                              return (Just (opponent player))
-                          | full board = do
-                              putStrLn "Draw!"
-                              return Nothing
-        play board X = do
-          let scored = minimax (\board -> scoreBoard board X) (prune depth (gameTree board))
-              score' = score scored
-              newBoard = scoredValue scored in do
-            putStrLn ("Computer X moved " ++ show score' ++ ":")
+playAI2 depth = let board = Board (8, 8) [(3, 3, W), (4, 4, W), (3, 4, B), (4, 3, B)] in do
+    print board
+    play board B
+  where 
+    play board player 
+        | not (canMove board player) || full board = do
+            let blackScore = countPieces board B
+            let whiteScore = countPieces board W            
+            putStrLn ("\nBlack score: " ++ show blackScore)
+            putStrLn ("White score: " ++ show whiteScore)
+            if blackScore > whiteScore then do
+                putStrLn "Black wins!\n--------------------"
+                return (Just B)
+            else if whiteScore > blackScore then do
+                putStrLn "White wins!\n--------------------"
+                return (Just W)
+            else do
+                putStrLn "It's a draw!\n--------------------"
+                return Nothing
+        | player == B = do
+            let scored = minimax (\board -> numberOfMoves board B) (prune depth (gameTree board))
+                moves' = score scored
+                newBoard = scoredValue scored
+            putStrLn ("\n" ++ "Black score: " ++ show (countPieces board B) ++ "\nWhite " ++ show (countPieces board W) ++ "\n--------------------\n\n\n\n\n[W Possible " ++ show moves' ++ "]\nComputer Black moved\n--------------------")
             print newBoard
-            play newBoard O
-        play board O = do
-          let scored = minimax (\board -> scoreBoard board O) (prune depth (gameTree board))
-              score' = score scored
-              newBoard = scoredValue scored in do
-            putStrLn ("Computer O moved " ++ show score' ++ ":")
+            play newBoard W
+        | player == W = do
+            let scored = minimax (\board -> numberOfMoves board W) (prune depth (gameTree board))
+                moves' = score scored
+                newBoard = scoredValue scored
+            putStrLn ("\n" ++ "Black score: " ++ show (countPieces board B) ++ "\nWhite " ++ show (countPieces board W) ++ "\n--------------------\n\n\n\n\n[B Possible " ++ show moves' ++ "]\nComputer White moved\n--------------------")
             print newBoard
-            play newBoard X
+            play newBoard B
