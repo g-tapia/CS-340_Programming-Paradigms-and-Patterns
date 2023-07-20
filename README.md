@@ -13,8 +13,9 @@ This repository contains most of the labs from my CS 340 class. Although, I did 
     - [Monadic Parsing (MP5)](#monadic-parsing-mp5)
         - [Part 1: Best First Search - Knight's Tour](#part-1-best-first-search---knights-tour)
         - [Part 2: Adversarial Search - Reversi](#part-2-adversarial-search---reversi)
-        - [Reversi Explanation and Demo](#reversi-explanation-and-demo)
-3. [Machine Problem Reports](#machine-problem-reports)
+3. [Reversi Explanation](#reversi-explanation)
+   - [Demo](#demo)
+5. [Machine Problem Reports](#machine-problem-reports)
 
 
 
@@ -121,7 +122,7 @@ Additionally, this assignment also highlighted the importance of selecting suita
 
 Overall, this machine problem enhanced my problem-solving skills, deepened my understanding of search strategies, and reinforced the practical use of algorithmic concepts like heuristic search and adversarial search in real-world problems.
 
-## Reversi Explanation and Demo
+## Reversi Explanation
 
 Reversi, also known as Othello, is a strategic board game played on an 8x8 grid by two players, typically one using black pieces and the other using white. Each player's turn involves placing a disc of their color on the board, in a position that 'outflanks' (vertically or diagonally) one or more of the opponent's discs. The outflanked discs are then flipped over to the player's color. For example, below, the white player placed the white disk on the far right-hand side. This move allowed the white player to flip the three flanked black disks to their own color. 
 
