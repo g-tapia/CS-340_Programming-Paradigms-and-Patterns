@@ -14,7 +14,8 @@ This repository contains most of the labs from my CS 340 class. Although, I did 
         - [Part 1: Best First Search - Knight's Tour](#part-1-best-first-search---knights-tour)
         - [Part 2: Adversarial Search - Reversi](#part-2-adversarial-search---reversi)
 3. [Reversi Explanation](#reversi-explanation)
-   - [Demo](#demo)
+   - [Reversi Demo](#reversi-demo)
+   - [Reversi Heuristics](#reversi-heuristics)
 5. [Machine Problem Reports](#machine-problem-reports)
 
 
@@ -177,7 +178,7 @@ This might be a lot to consider, so let's examine a simpler case instead. Below,
 
 Overall, we have built the intuition of how the AI thinks ahead, and now, you can imagine that the further ahead the AI calculates, the more costly it can be since the tree will grow bigger. 
 
-## Demo
+## Reversi Demo
 ### User vs AI
 Now that you have an understanding of how the underlying implementation works, it is time to move on to the demo. In this part of the demo, we'll examine how our AI interacts with a human opponent, at pruning level 3.
 
@@ -207,7 +208,7 @@ https://github.com/g-tapia/CS-340_Programming-Paradigms-and-Patterns/assets/7823
 
 
 
-## Reversi (Othello) Heuristics
+## Reversi Heuristics
 
 Reversi, also known as Othello, is a strategy game where two players compete to finish the game with more of their colored pieces on the board than their opponent. In order to implement an AI opponent for Reversi, we employ heuristics to help evaluate board positions and make optimal moves. Here, we present four primary heuristics as discussed in this [research paper](https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf).
 
