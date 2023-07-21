@@ -226,6 +226,12 @@ Stability refers to discs that can't be flipped for the remainder of the game. W
 
 Each of these heuristics provides a unique lens to evaluate a given board configuration. For a sophisticated AI player, these heuristics can be weighted differently depending on the stage of the game (opening, midgame, endgame) to craft a more nuanced and effective evaluation function.
 
+
+## References
+1. [Minimax Algorithm in Java - Baeldung](https://www.baeldung.com/java-minimax-algorithm)
+2. [Minimax Algorithm - University of Washington](https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf)
+3. [Othello Online - Daroolz](https://daroolz.com/play/othello/)
+
 ---
 
 For more details on the implementation of these heuristics and their effectiveness, refer to the original [research paper](https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf). Stay tuned for more updates on this project.
