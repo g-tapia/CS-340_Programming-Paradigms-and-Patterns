@@ -1,6 +1,8 @@
 # CS-340-Haskell-Programming-Paradigms-and-Patterns-
 
-This repository contains most of the labs from my CS 340 class. Although, I did lose some files amongst my quest to obtain my degree, so I will upload what was salvaged. 
+This repository contains my lab exercises (also known as machine problems, abbreviated as MP#) from my class at IIT.
+
+Please refer to the table of contents for each lab. If you arrived at my Reversi link via my resume, I recommend that you first click on the Reversi explanation before viewing the Reversi demo.
 
 
 ## Table of Contents
